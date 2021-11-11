@@ -92,7 +92,7 @@ function BoardView() {
             setCount(1)
         }
 
-    }, [board.score])
+    }, [board.score, count])
 
     return (
         <div>
