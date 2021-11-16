@@ -1,3 +1,4 @@
+// Rotate left matrix method
 let rotateLeft = function (matrix) {
     let rows = matrix.length;
     let columns = matrix[0].length;
@@ -10,7 +11,7 @@ let rotateLeft = function (matrix) {
     }
     return res;
 };
-
+// tiles class is constructed which is an array of object
 class Tile {
     constructor(value, row, column) {
         this.value = value || 0;
@@ -22,18 +23,18 @@ class Tile {
         this.mergedInto = null;
         this.id = this.id++ || 0;
     }
-
+// History of each grid
     moveTo(row, column) {
         this.oldRow = this.row;
         this.oldColumn = this.column;
         this.row = row;
         this.column = column;
     }
-
+    // checking whether 2 4 is already persent or from random
     isNew() {
         return this.oldRow === -1 && !this.mergedInto;
     }
-
+//    checking whether the grid has moved or not
     hasMoved() {
         return (
             (this.fromRow() !== -1 &&
@@ -42,7 +43,7 @@ class Tile {
             this.mergedInto
         );
     }
-
+    // History of row means from which row you come similaliy for all other
     fromRow() {
         return this.mergedInto ? this.row : this.oldRow;
     }
@@ -59,7 +60,7 @@ class Tile {
         return this.mergedInto ? this.mergedInto.column : this.column;
     }
 }
-
+// Board onstructor ceil is array of object
 class Board {
     constructor() {
         this.tiles = [];
@@ -83,12 +84,13 @@ class Board {
         this.setPositions();
         this.won = false;
     }
-
+//    pushed res object into each tiles
     addTile(args) {
         let res = new Tile(args);
         this.tiles.push(res);
         return res;
     }
+    // algorithm of swipe left1
 
     moveLeft() {
         let hasChanged = false;
@@ -117,6 +119,8 @@ class Board {
         }
         return hasChanged;
     }
+    // At every grid there is an object for detecting changes it consists of five instances like oldRow oldColumn current row
+    // curr column and one bool markfordeletion
 
     setPositions() {
         this.cells.forEach((row, rowIndex) => {
@@ -130,6 +134,8 @@ class Board {
         });
     }
 
+//    first storing zero value grid then generating random index which is less then empty cells length and then just putting the value
+// of 2 and 4 with probability of 0.1
     addRandomTile() {
         let emptyCells = [];
         for (let r = 0; r < this.size; ++r) {
@@ -145,39 +151,50 @@ class Board {
         this.cells[cell.r][cell.c] = this.addTile(newValue);
     }
 
+    // rotate grid according to choice if it is right than rotate left twice similariy for other
+
     move(direction) {
         // 0 -> left, 1 -> up, 2 -> right, 3 -> down
         this.clearOldTiles();
         for (let i = 0; i < direction; ++i) {
             this.cells = rotateLeft(this.cells);
         }
+        
+        // if any two grid merged
         let hasChanged = this.moveLeft();
+        // rerorate  back to original grid
         for (let i = direction; i < 4; ++i) {
             this.cells = rotateLeft(this.cells);
         }
+        // if changed then we will add random tiles at those empty placed
         if (hasChanged) {
             this.addRandomTile();
         }
+        // 
         this.setPositions();
         return this;
     }
-
+    // condition for removing merged tiles
     clearOldTiles() {
         this.tiles = this.tiles.filter((tile) => tile.markForDeletion === false);
         this.tiles.forEach((tile) => {
             tile.markForDeletion = true;
         });
     }
-
+//    check wether 2048 is achieved or not
     hasWon() {
         return this.won;
     }
+
+// 
 
     hasLost() {
         let canMove = false;
         for (let row = 0; row < this.size; ++row) {
             for (let column = 0; column < this.size; ++column) {
+                // if we found 0 then can move value would be 1
                 canMove |= this.cells[row][column].value === 0;
+                // checking wether the neioghour grid have same value or not.
                 for (let dir = 0; dir < 4; ++dir) {
                     let newRow = row + this.deltaX[dir];
                     let newColumn = column + this.deltaY[dir];

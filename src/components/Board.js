@@ -34,6 +34,8 @@ function BoardView() {
             return
         }
         // 0 -> left, 1 -> up, 2 -> right, 3 -> down
+        // A-left,w->up,s->down, d->right
+        // The main logic behind this is left  rotation if we click on up we will have to rotate 1 time similary for other.
         let keycodes = {
             37: 0,
             65: 0,
@@ -47,6 +49,7 @@ function BoardView() {
 
         if (event.keyCode in keycodes) {
             let direction = keycodes[`${event.keyCode}`]
+            // Storation of current board
             let boardClone = Object.assign(Object.create(Object.getPrototypeOf(board)), board)
             let newBoard = boardClone.move(direction)
             setBoard(newBoard)
@@ -55,7 +58,7 @@ function BoardView() {
 
     useEvent('keydown', handleKeyDown)
 
-    // add backside cells
+    // add backside cells making 2-d grid
     const cells = board.cells.map((row, rowIndex) => {
         return (
             <div key={rowIndex}>
@@ -66,7 +69,7 @@ function BoardView() {
         )
     })
 
-    // add font side tiles
+    // add font side tiles added extra tiles over board so that color can be maintained
     const tiles = board.tiles
         .filter((tile) => tile.value !== 0)
         .map((tile, index) => {
@@ -81,6 +84,8 @@ function BoardView() {
 
     // handle intial score addition to none
     const [count, setCount] = useState(0)
+
+    // response wait till you press any key for 6ms
 
     useEffect(() => {
         if (count !== 0) {
